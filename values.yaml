@@ -180,7 +180,9 @@ controller:
   jenkinsUrlProtocol:
 
   # -- Set Jenkins URL if you are not using the ingress definitions provided by the chart
-  jenkinsUrl:
+  jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+
+
 
   # If you set this prefix and use ingress controller, then you might want to set the ingress path below
   # I.e., "/jenkins"
@@ -981,7 +983,7 @@ agent:
 
   # For connecting to the Jenkins controller
   # -- Overrides the Kubernetes Jenkins URL
-  jenkinsUrl: "http://localhost:32000"
+  jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
 
   # connects to the specified host and port, instead of connecting directly to the Jenkins controller
   # -- Overrides the Kubernetes Jenkins tunnel
