@@ -16,7 +16,8 @@ spec:
     - cat
     tty: true
   - name: docker
-    image: docker
+    image: docker:24.0.9-cli
+    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
