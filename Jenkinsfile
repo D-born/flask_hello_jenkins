@@ -15,6 +15,11 @@ spec:
     command:
     - cat
     tty: true
+  - name: kubectl
+    image: lachlanevenson/k8s-kubectl:v1.17.2
+    command:
+    - cat
+    tty: true
 """
     }
   }
@@ -24,6 +29,14 @@ spec:
         container('python') {
           sh 'pip install -r requirements.txt'
           sh 'python test.py'
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        container('kubectl') {
+          sh 'kubectl apply -f ./kubernetes/deployment.yaml'
+          sh 'kubectl apply -f ./kubernetes/service.yaml'
         }
       }
     }
