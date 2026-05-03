@@ -1,0 +1,3 @@
+Pour un tunnel local entre votre machine et le service Jenkins dans Kubernetes.
+Commandes:
+    kubectl port-forward svc/jenkins 32000:8080 -n jenkins
