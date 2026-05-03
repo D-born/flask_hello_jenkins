@@ -1,21 +1,17 @@
-# TP Jenkins - Docker - Kubernetes
+# Jenkins - Docker - Kubernetes Mini Project
 
-## Objectif
+## Overview
 
-Mettre en place un pipeline CI/CD avec Jenkins, Docker et Kubernetes pour tester et deployer une application Flask.
+This project demonstrates a complete CI/CD workflow built around:
 
-## Etat actuel du projet
+- Jenkins
+- Docker
+- Kubernetes
+- a Python Flask application
 
-Ce projet contient deja:
+The objective is to automate testing and deployment of a simple web application using Jenkins pipelines and Kubernetes agents.
 
-- une application Flask
-- des tests unitaires
-- un `Dockerfile`
-- un `Jenkinsfile`
-- des manifests Kubernetes
-- une branche `feature1` pour la partie TDD
-
-## Arborescence utile
+## Project Structure
 
 ```text
 flask_app/
@@ -31,16 +27,84 @@ flask_app/
 └── README.md
 ```
 
-## Etapes du TP
+## Application
 
-### 1. Jenkins avec Docker
+The application is a simple Flask service exposing:
 
-Dans `tp_jenkins/jenkins_simple`:
+- `/`
+- `/hello/`
+- `/hello/<username>`
+- `/feature/<username>`
 
-- creer `docker-compose.yml`
-- creer `home/`
-- creer `jenkins_data/`
-- lancer Jenkins:
+Unit tests are implemented with Python `unittest`.
+
+## Completed Work
+
+The project includes the following completed steps:
+
+1. Jenkins installation with Docker
+2. Creation of a first Jenkins pipeline (`hello`)
+3. Development of the Flask application
+4. Local execution of unit tests
+5. Docker image creation and validation
+6. Local Docker registry usage
+7. GitHub repository integration
+8. Jenkins deployment on Kubernetes
+9. Pipeline as code with `Jenkinsfile`
+10. Kubernetes deployment manifests
+11. TDD workflow on branch `feature1`
+
+## Local Test Execution
+
+From the project directory:
+
+```powershell
+cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
+.\.venv\Scripts\python.exe test.py -v
+```
+
+Expected result:
+
+```text
+Ran 4 tests ...
+OK
+```
+
+## Docker Build
+
+Build the application image:
+
+```powershell
+cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
+docker build -t flask_hello .
+```
+
+Run tests inside the container:
+
+```powershell
+docker run --rm flask_hello ./test.py -v
+```
+
+## Local Registry
+
+Start the local registry:
+
+```powershell
+docker run -d -p 4000:5000 --name registry registry
+```
+
+Tag and push the image:
+
+```powershell
+docker tag flask_hello localhost:4000/flask_hello
+docker push localhost:4000/flask_hello
+```
+
+## Jenkins with Docker
+
+Jenkins was first started from the `jenkins_simple` directory using Docker Compose.
+
+Typical commands:
 
 ```powershell
 cd C:\Users\kenny\Desktop\tp_jenkins\jenkins_simple
@@ -48,105 +112,11 @@ docker compose up -d
 docker compose logs
 ```
 
-- ouvrir Jenkins dans le navigateur
-- initialiser Jenkins
-- installer les plugins recommandes
+## Jenkins on Kubernetes
 
-### 2. Premier pipeline hello
+Jenkins was deployed in Kubernetes using Helm.
 
-Dans Jenkins:
-
-- creer un pipeline `hello`
-- coller ce script:
-
-```groovy
-pipeline {
-  agent any
-  stages {
-    stage("Hello") {
-      steps {
-        echo 'Hello World'
-      }
-    }
-  }
-}
-```
-
-- lancer le build
-- verifier `Console Output`
-
-### 3. Application Flask
-
-Dans `flask_app`:
-
-- creer `app.py`
-- creer `test.py`
-- creer `requirements.txt`
-- creer `.gitignore`
-
-Lancer les tests localement:
-
-```powershell
-cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
-.\.venv\Scripts\python.exe test.py -v
-```
-
-Resultat attendu:
-
-```text
-Ran 3 tests ...
-OK
-```
-
-### 4. Dockerisation
-
-Construire l'image:
-
-```powershell
-cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
-docker build -t flask_hello .
-```
-
-Tester le conteneur:
-
-```powershell
-docker run --rm flask_hello ./test.py -v
-```
-
-### 5. Registry local
-
-Lancer le registry:
-
-```powershell
-docker run -d -p 4000:5000 --name registry registry
-```
-
-Tagger et pousser:
-
-```powershell
-docker tag flask_hello localhost:4000/flask_hello
-docker push localhost:4000/flask_hello
-```
-
-### 6. Git et GitHub
-
-Initialiser Git:
-
-```powershell
-cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
-git init
-git add .
-git commit -m "Initial Flask app"
-git branch -M main
-git remote add origin git@github.com:D-born/flask_hello_jenkins.git
-git push -u origin main
-```
-
-### 7. Jenkins sur Kubernetes
-
-Activer Kubernetes dans Docker Desktop puis deployer Jenkins avec Helm.
-
-Commandes utilisees:
+Typical setup commands:
 
 ```powershell
 kubectl create namespace jenkins
@@ -154,57 +124,49 @@ kubectl config set-context --current --namespace=jenkins
 helm repo add jenkins https://charts.jenkins.io
 helm repo update
 helm show values jenkins/jenkins > values.yaml
-```
-
-Modifier `values.yaml`:
-
-- utilisateur admin
-- mot de passe admin
-- exposition Jenkins
-
-Installer Jenkins:
-
-```powershell
 helm install jenkins jenkins/jenkins -n jenkins -f values.yaml
 ```
 
-Acces local:
+Access can be established locally with:
 
 ```powershell
 kubectl port-forward svc/jenkins 32000:8080 -n jenkins
 ```
 
-Navigateur:
+Then open:
 
 ```text
 http://localhost:32000
 ```
 
-### 8. Pipeline Git avec Jenkinsfile
+## Jenkins Pipeline
 
-Le `Jenkinsfile` utilise un agent Kubernetes.
+The Jenkins pipeline is defined in:
 
-Le pipeline valide:
+- [Jenkinsfile](C:/Users/kenny/Desktop/tp_jenkins/flask_app/Jenkinsfile)
 
-- checkout Git
-- installation des dependances
-- execution des tests
+The pipeline covers:
 
-### 9. Deploiement Kubernetes
+- source checkout
+- Python dependency installation
+- test execution
+- Kubernetes deployment
 
-Les manifests sont dans:
+## Kubernetes Deployment
 
-- `kubernetes/deployment.yaml`
-- `kubernetes/service.yaml`
+Deployment files:
 
-Le pipeline appelle:
+- [kubernetes/deployment.yaml](C:/Users/kenny/Desktop/tp_jenkins/flask_app/kubernetes/deployment.yaml)
+- [kubernetes/service.yaml](C:/Users/kenny/Desktop/tp_jenkins/flask_app/kubernetes/service.yaml)
 
-```sh
-kubectl apply -f ./kubernetes/deployment.yaml
-kubectl apply -f ./kubernetes/service.yaml
+Apply manually if needed:
+
+```powershell
+kubectl apply -f .\kubernetes\deployment.yaml -n jenkins
+kubectl apply -f .\kubernetes\service.yaml -n jenkins
 ```
 
-Verification:
+Check cluster resources:
 
 ```powershell
 kubectl get deployment -n jenkins
@@ -212,73 +174,27 @@ kubectl get pods -n jenkins
 kubectl get svc -n jenkins
 ```
 
-### 10. Partie TDD
+## TDD Workflow
 
-Creation de la branche:
+The TDD part was completed on branch `feature1`.
 
-```powershell
-git checkout -b feature1
-```
+Main steps:
 
-Ajout du test en echec dans `test.py`:
+1. Create the feature branch
+2. Add a failing test for `/feature/<username>`
+3. Push the failing test
+4. Implement the missing Flask route
+5. Re-run tests and push the fix
 
-```python
-    def test_new_route(self):
-        name = 'Simon'
-        rv = self.app.get(f'/feature/{name}')
-        self.assertEqual(rv.status, '200 OK')
-```
+Recent commits include:
 
-Push du test:
+- `Add failing feature route test`
+- `Implement feature route`
+- `Adjust deployment image for Kubernetes`
 
-```powershell
-git add test.py
-git commit -m "Add failing feature route test"
-git push -u origin feature1
-```
+## Git Status
 
-Correction dans `app.py`:
-
-```python
-@app.route('/feature/<username>')
-def feature_user(username):
-    return 'Hello %s!\n' % username
-```
-
-Verifier localement:
-
-```powershell
-.\.venv\Scripts\python.exe test.py -v
-```
-
-Push de la correction:
-
-```powershell
-git add app.py
-git commit -m "Implement feature route"
-git push
-```
-
-### 11. Ajustement du deploiement
-
-Le deploiement final utilise:
-
-```yaml
-image: pythontest:latest
-imagePullPolicy: Never
-```
-
-Puis:
-
-```powershell
-docker tag flask_hello pythontest:latest
-kubectl apply -f .\kubernetes\deployment.yaml -n jenkins
-kubectl rollout restart deployment pythontest -n jenkins
-```
-
-## Verification finale
-
-Verifier l'etat Git:
+Useful commands:
 
 ```powershell
 git status
@@ -286,21 +202,12 @@ git branch -vv
 git log --oneline -5
 ```
 
-Verifier Kubernetes:
+## Final Result
 
-```powershell
-kubectl get deployment -n jenkins
-kubectl get pods -n jenkins
-kubectl get svc -n jenkins
-```
+This repository contains a working educational CI/CD project demonstrating:
 
-## Resultat attendu
-
-Le projet final doit montrer:
-
-- Jenkins operationnel
-- pipeline de test
-- application Flask testee
-- image Docker construite
-- deploiement Kubernetes
-- branche `feature1` avec TDD
+- Jenkins setup
+- Docker image build workflow
+- Kubernetes-based Jenkins agents
+- application deployment to Kubernetes
+- a simple TDD workflow using Git branches
