@@ -17,23 +17,27 @@ spec:
     tty: true
   - name: docker
     image: docker:24.0.9-cli
-    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
-    volumeMounts:
-    - mountPath: /var/run/docker.sock
-      name: docker-sock
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
+    env:
+    - name: DOCKER_HOST
+      value: tcp://localhost:2375
+  - name: dind
+    image: docker:24.0.9-dind
+    securityContext:
+      privileged: true
+    env:
+    - name: DOCKER_TLS_CERTDIR
+      value: ""
+    command:
+    - dockerd-entrypoint.sh
+    args:
+    - --host=tcp://0.0.0.0:2375
+    - --host=unix:///var/run/docker.sock
 """
     }
   }
-//   triggers {
-//     pollSCM('* * * * *')
-//   }
   stages {
     stage('Test python') {
       steps {
@@ -46,6 +50,7 @@ spec:
     stage('Build image') {
       steps {
         container('docker') {
+          sh 'docker version'
           sh 'docker build -t localhost:4000/pythontest:latest .'
           sh 'docker push localhost:4000/pythontest:latest'
         }
