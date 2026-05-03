@@ -31,9 +31,9 @@ spec:
 """
     }
   }
-  triggers {
-    pollSCM('* * * * *')
-  }
+//   triggers {
+//     pollSCM('* * * * *')
+//   }
   stages {
     stage('Test python') {
       steps {
