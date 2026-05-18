@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - image: localhost:4000/pythontest:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: pythontest
         ports:
         - containerPort: 5000

@@ -1,3 +1,18 @@
-Pour un tunnel local entre votre machine et le service Jenkins dans Kubernetes.
-Commandes:
-    kubectl port-forward svc/jenkins 32000:8080 -n jenkins
+Tester Jenkins Kubernetes
+    Pour un tunnel local entre votre machine et le service Jenkins dans Kubernetes.
+    Commandes:
+        kubectl port-forward svc/jenkins 32000:8080 -n jenkins
+
+
+Puis ouvrez:
+    http://localhost:32000
+Si Blue Ocean est installé:
+    http://localhost:32000/blue
+
+Tester l’application déployée:
+    kubectl port-forward svc/pythontest 31000:5000 -n jenkins
+
+    http://localhost:31000
+    http://localhost:31000/hello/
+    http://localhost:31000/hello/Simon
+    http://localhost:31000/feature/Simon
