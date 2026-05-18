@@ -1,18 +1,78 @@
-Tester Jenkins Kubernetes
-    Pour un tunnel local entre votre machine et le service Jenkins dans Kubernetes.
-    Commandes:
-        kubectl port-forward svc/jenkins 32000:8080 -n jenkins
+LANCEUR DU TP JENKINS / DOCKER / KUBERNETES
+
+Chemin du projet:
+    C:\Users\kenny\Desktop\tp_jenkins\flask_app
 
 
-Puis ouvrez:
+1. Ouvrir Jenkins
+
+Dans un terminal PowerShell:
+    cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
+    kubectl port-forward svc/jenkins 32000:8080 -n jenkins
+
+Puis ouvrir dans le navigateur:
     http://localhost:32000
-Si Blue Ocean est installé:
+
+Si Blue Ocean est installe:
     http://localhost:32000/blue
 
-Tester l’application déployée:
+
+2. Ouvrir l'application Flask deployee
+
+Dans un deuxieme terminal PowerShell:
+    cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
     kubectl port-forward svc/pythontest 31000:5000 -n jenkins
 
+Puis ouvrir dans le navigateur:
     http://localhost:31000
     http://localhost:31000/hello/
     http://localhost:31000/hello/Simon
     http://localhost:31000/feature/Simon
+
+Resultat attendu pour /feature/Simon:
+    Hello Simon!
+
+
+3. Lancer les tests complets du projet
+
+Dans PowerShell:
+    cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
+    .\.venv\Scripts\python.exe test.py -v
+
+Resultat attendu:
+    Ran 4 tests
+    OK
+
+
+4. Tester l'image Docker
+
+Dans PowerShell:
+    cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
+    docker run --rm localhost:4000/pythontest:latest ./test.py -v
+
+Resultat attendu:
+    Ran 4 tests
+    OK
+
+
+5. Verifier Kubernetes
+
+Dans PowerShell:
+    kubectl get pods -n jenkins
+    kubectl get svc -n jenkins
+    kubectl get deployment -n jenkins
+
+Resultat attendu:
+    jenkins-0 Running
+    pythontest Running
+    deployment pythontest 1/1 disponible
+
+
+6. Envoyer les changements dans Git
+
+Dans PowerShell:
+    cd C:\Users\kenny\Desktop\tp_jenkins\flask_app
+    git status
+    git add .
+    git commit -m "Update project launcher"
+    git push
